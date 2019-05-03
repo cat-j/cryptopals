@@ -1,4 +1,3 @@
-import binascii
 import importlib.util
 spec = importlib.util.spec_from_file_location("utils", "./utils.py")
 utils = importlib.util.module_from_spec(spec)
