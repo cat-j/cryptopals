@@ -71,6 +71,12 @@ def frequency_distance(my_string):
     frequencies = analyse_frequencies(my_string)
     return dict_frequency_distance(frequencies)
 
+def is_alpha(ch):
+    return ((ch >= 'a' and ch <= 'z') or (ch >= 'A' and ch <= 'Z'))
+
+def count_alpha_chars(my_string):
+    return sum([(1 if is_alpha(ch) else 0) for ch in my_string])
+
 # @var my_string: ASCII representation of hex bytes without 0x prefix
 def str_to_base64(my_string):
     return base64.b64encode(bytes.fromhex(my_string))
