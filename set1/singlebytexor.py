@@ -1,0 +1,37 @@
+import math
+import importlib.util
+spec = importlib.util.spec_from_file_location("utils", "./utils.py")
+utils = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(utils)
+
+# @var ciphertext: hex-encoded string as a byte array
+# @var key: single-char key as an int
+def decrypt_single_key(ciphertext, key):
+    return "".join([chr(b ^ key) for b in ciphertext])
+
+# @var ciphertext: hex-encoded string as a byte array
+def frequency_decrypt(ciphertext):
+    best_score, best_plaintext = math.inf, ""
+
+    for key in range(256):
+        current_plaintext = decrypt_single_key(ciphertext, key)
+        current_score = utils.frequency_distance(current_plaintext)
+        # print("key:%d\tscore:%f\tplaintext:%s" % (key, current_score, current_plaintext))
+        if current_score < best_score:
+            best_score, best_plaintext = current_score, current_plaintext
+    
+    return (best_score, best_plaintext)
+
+def alpha_chars_decrypt(ciphertext):
+    best_score, best_plaintext = 0, ""
+
+    for key in range(256):
+        current_plaintext = decrypt_single_key(ciphertext, key)
+        current_score = utils.count_alpha_chars(current_plaintext)
+        if current_score > best_score:
+            best_score, best_plaintext = current_score, current_plaintext
+        
+    return best_plaintext
+
+raw_bytes = bytearray.fromhex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
+print(alpha_chars_decrypt(raw_bytes))
