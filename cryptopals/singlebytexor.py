@@ -1,8 +1,5 @@
 import math
-import importlib.util
-spec = importlib.util.spec_from_file_location("utils", "./utils.py")
-utils = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(utils)
+import utils
 
 # @var ciphertext: hex-encoded string as a byte array
 # @var key: single-char key as an int
