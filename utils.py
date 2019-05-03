@@ -53,7 +53,8 @@ def analyse_frequencies(my_string):
     lowercase_string = my_string.lower()
 
     for c in lowercase_string:
-        appearances[c] += 1
+        if (ord(c) >= ord('a') and ord(c) <= ord('z')):
+            appearances[c] += 1
 
     # calculate frequencies
     frequencies = {}
