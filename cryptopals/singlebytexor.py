@@ -13,7 +13,6 @@ def frequency_decrypt(ciphertext):
     for key in range(256):
         current_plaintext = decrypt_single_key(ciphertext, key)
         current_score = frequency.frequency_distance(current_plaintext)
-        # print("key:%d\tscore:%f\tplaintext:%s" % (key, current_score, current_plaintext))
         if current_score < best_score:
             best_score, best_plaintext = current_score, current_plaintext
     
@@ -30,5 +29,5 @@ def alpha_chars_decrypt(ciphertext):
         
     return best_plaintext
 
-raw_bytes = bytearray.fromhex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
-print(alpha_chars_decrypt(raw_bytes))
+# raw_bytes = bytearray.fromhex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
+# print(alpha_chars_decrypt(raw_bytes))
