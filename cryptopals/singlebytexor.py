@@ -16,7 +16,7 @@ def frequency_decrypt(ciphertext):
         if current_score < best_score:
             best_score, best_plaintext = current_score, current_plaintext
     
-    return (best_score, best_plaintext)
+    return best_plaintext
 
 def alpha_chars_decrypt(ciphertext):
     best_score, best_plaintext = 0, ""
