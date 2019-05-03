@@ -72,5 +72,14 @@ def frequency_distance(my_string):
 def is_alpha(ch):
     return ((ch >= 'a' and ch <= 'z') or (ch >= 'A' and ch <= 'Z'))
 
+def is_ascii(ch):
+    n = ord(ch)
+    return(n >= 32 and n < 128)
+
+# TODO: refactor the next two functions
+
 def count_alpha_chars(my_string):
     return sum([(1 if is_alpha(ch) else 0) for ch in my_string])
+
+def count_ascii_chars(my_string):
+    return sum([(1 if is_ascii(ch) else 0) for ch in my_string])
