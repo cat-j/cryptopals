@@ -1,5 +1,5 @@
 import math
-import utils
+import frequency
 
 # @var ciphertext: hex-encoded string as a byte array
 # @var key: single-char key as an int
@@ -12,7 +12,7 @@ def frequency_decrypt(ciphertext):
 
     for key in range(256):
         current_plaintext = decrypt_single_key(ciphertext, key)
-        current_score = utils.frequency_distance(current_plaintext)
+        current_score = frequency.frequency_distance(current_plaintext)
         # print("key:%d\tscore:%f\tplaintext:%s" % (key, current_score, current_plaintext))
         if current_score < best_score:
             best_score, best_plaintext = current_score, current_plaintext
@@ -24,7 +24,7 @@ def alpha_chars_decrypt(ciphertext):
 
     for key in range(256):
         current_plaintext = decrypt_single_key(ciphertext, key)
-        current_score = utils.count_alpha_chars(current_plaintext)
+        current_score = frequency.count_alpha_chars(current_plaintext)
         if current_score > best_score:
             best_score, best_plaintext = current_score, current_plaintext
         

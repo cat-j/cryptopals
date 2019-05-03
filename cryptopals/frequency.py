@@ -1,5 +1,3 @@
-import base64
-
 ENGLISH_ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 ENGLISH_ALPHABET_LETTERS = 26
@@ -76,10 +74,3 @@ def is_alpha(ch):
 
 def count_alpha_chars(my_string):
     return sum([(1 if is_alpha(ch) else 0) for ch in my_string])
-
-# @var my_string: ASCII representation of hex bytes without 0x prefix
-def str_to_base64(my_string):
-    return base64.b64encode(bytes.fromhex(my_string))
-
-def fixed_xor(buf1, buf2):
-    return hex(int(buf1, 16) ^ int(buf2, 16))
