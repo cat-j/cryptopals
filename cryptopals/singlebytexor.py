@@ -6,7 +6,7 @@ import frequency
 def decrypt_single_key(ciphertext, key):
     return "".join([chr(b ^ key) for b in ciphertext])
 
-# TODO: document and refactor the next 2 functions
+# TODO: document and refactor the next 4 functions
 
 # @var ciphertext: hex-encoded string as a byte array
 def frequency_decrypt(ciphertext):
@@ -27,12 +27,28 @@ def alpha_chars_decrypt(ciphertext):
     for key in range(256):
         current_plaintext = decrypt_single_key(ciphertext, key)
         current_score = frequency.count_alpha_chars(current_plaintext)
-        current_score = current_score / l
+        # current_score = current_score / l
+        if current_score > best_score:
+            best_score, best_plaintext = current_score, current_plaintext
+    
+    # print("plaintext: %s\tlength: %d\n" % (best_plaintext, l))
+        
+    return (best_score, best_plaintext)
+
+def alnum_chars_decrypt(ciphertext):
+    best_score, best_plaintext = 0, ""
+    l = len(ciphertext)
+
+    for key in range(256):
+        current_plaintext = decrypt_single_key(ciphertext, key)
+        current_score = frequency.count_alnum_chars(current_plaintext)
+        # current_score = current_score / l
         if current_score > best_score:
             best_score, best_plaintext = current_score, current_plaintext
         
     return (best_score, best_plaintext)
 
+# this function is extremely bad for short plaintexts
 def ascii_chars_decrypt(ciphertext):
     best_score, best_plaintext = 0, ""
     l = len(ciphertext)
@@ -40,7 +56,7 @@ def ascii_chars_decrypt(ciphertext):
     for key in range(256):
         current_plaintext = decrypt_single_key(ciphertext, key)
         current_score = frequency.count_ascii_chars(current_plaintext)
-        current_score = current_score / l
+        # current_score = current_score / l
         if current_score > best_score:
             best_score, best_plaintext = current_score, current_plaintext
         

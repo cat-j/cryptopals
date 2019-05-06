@@ -1,4 +1,6 @@
 import singlebytexor
+import frequency
+import binascii
 
 def find_single_byte_xor(filename):
     lines = open(filename, 'r').read().splitlines()
@@ -6,11 +8,10 @@ def find_single_byte_xor(filename):
     best_score, best_string = 0, ""
 
     for r in raw_data:
-        current_score, current_string = singlebytexor.ascii_chars_decrypt(r)
+        current_score, current_string = singlebytexor.alpha_chars_decrypt(r)
         if (current_score > best_score):
-            print("score: %f\tstring: %s\n" % (current_score, current_string))
             best_score, best_string = current_score, current_string
     
-    return (best_score, best_string)
+    return best_string
 
 print(find_single_byte_xor("data/4.txt"))
