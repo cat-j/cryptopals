@@ -79,7 +79,7 @@ def is_ascii(ch):
     n = ord(ch)
     return(n >= 0 and n < 128)
 
-# TODO: refactor the next two functions
+# TODO: refactor the next three functions
 
 def count_alpha_chars(my_string):
     return sum([(1 if is_alpha_space_or_null(ch) else 0) for ch in my_string])
@@ -97,3 +97,24 @@ def show_alpha_chars(my_string):
 def show_ascii_chars(my_string):
     for ch in my_string:
         print("ch: %s\tord:%d\tis_ascii: %d\n" % (ch, ord(ch), is_ascii(ch)))
+
+# string1 and string2 must be the same length
+def hamming_distance(string1, string2):
+    distance = 0
+    bytes1, bytes2 = bytes(string1, "utf-8"), bytes(string2, "utf-8")
+    for i in range(len(bytes1)):
+        xord = bytes1[i] ^ bytes2[i]
+        distance += count_ones(xord)
+    return distance
+
+def blocks_hamming_distance(ciphertext, length):
+    block1 = ciphertext[0:length]
+    block2 = ciphertext[length:2*length]
+    return hamming_distance(block1, block2)
+
+def count_ones(n):
+    result = 0
+    while n > 0:
+        result += n%2
+        n = n >> 1
+    return result
