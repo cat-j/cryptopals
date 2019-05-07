@@ -100,6 +100,13 @@ alpha_chars = frequency.CharTypeCount(frequency.is_alpha)
 alpha_space_or_null_chars = frequency.CharTypeCount(frequency.is_alpha_space_or_null)
 alnum_chars = frequency.CharTypeCount(lambda x: x.isalnum())
 
-cracks = crack_file("data/6.txt", frequency.FrequencyDistance, best_n=50)
+cracks = crack_file("data/6.txt", frequency.FrequencyDistance, best_n=40)
 crack = get_best_crack(cracks, frequency.FrequencyDistance)
-print(crack.decode())
+
+f = open("repeating_xor_crack_log.txt", "+w")
+for crack in cracks:
+    try:
+        f.write("%s\n" % crack.decode())
+    except:
+        continue
+f.close()
