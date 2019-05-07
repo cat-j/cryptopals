@@ -1,4 +1,5 @@
 import math
+import binascii
 import singlebytexor
 import frequency
 import encrypt
@@ -49,27 +50,56 @@ def get_blocks_for_best_distances(ciphertext, distances, best_n=None):
     
     return blocks
 
-def crack_n(ciphertext, score_fn, lower=1, upper=1, best_n=None):
+def crack_n(ciphertext, score_fn, lower=1, upper=None, best_n=None):
+    if upper == None: upper = len(ciphertext) // 2
+    
+    print("Calculating key length distances...")
     distances = get_key_length_distances(ciphertext, lower, upper)
+
+    print("Calculating blocks...")
     distance_blocks = get_blocks_for_best_distances(ciphertext, distances, best_n)
+    
+    print("Calculating XOR bytes...")
     xor_bytes = [get_xor_bytes(blocks, score_fn) for blocks in distance_blocks]
+
+    print("Decrypting...")
     decrypted = [encrypt.xor_encrypt(ciphertext, key) for key in xor_bytes]
     return decrypted
 
-def crack_one(ciphertext, score_fn, lower=1, upper=1):
+def crack_one(ciphertext, score_fn, lower=1, upper=None):
     return crack_n(ciphertext, score_fn, lower, upper, 1)[0]
 
 def get_best_crack(cracks, score_fn):
     best_score, best_crack = score_fn.worst_score, None
 
     for crack in cracks:
-        current_score = score_fn.score(crack.decode())
-        if score_fn.compare(current_score, best_score):
-            best_score, best_crack = current_score, crack
+        try:
+            current_score = score_fn.score(crack.decode())
+            if score_fn.compare(current_score, best_score):
+                best_score, best_crack = current_score, crack
+        except:
+            continue
     
     return best_crack
 
-raw_bytes = bytearray.fromhex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
-cracked = crack_n(raw_bytes, len(raw_bytes)//2, frequency.CharTypeCount(frequency.is_alpha))
-crack = get_best_crack(cracked, frequency.CharTypeCount(frequency.is_alpha_space_or_null))
+def decode_file(filename):
+    lines = open(filename, 'r').read().splitlines()
+    decoded_bytes = bytearray(b'')
+
+    for line in lines:
+        decoded_bytes += binascii.a2b_base64(line)
+    
+    return decoded_bytes
+
+def crack_file(filename, score_fn, lower=1, upper=None, best_n=None):
+    decoded_bytes = decode_file(filename)
+    return crack_n(decoded_bytes, score_fn, lower, upper, best_n)
+
+frequency_distance = frequency.FrequencyDistance
+alpha_chars = frequency.CharTypeCount(frequency.is_alpha)
+alpha_space_or_null_chars = frequency.CharTypeCount(frequency.is_alpha_space_or_null)
+alnum_chars = frequency.CharTypeCount(lambda x: x.isalnum())
+
+cracks = crack_file("data/6.txt", frequency.FrequencyDistance, best_n=50)
+crack = get_best_crack(cracks, frequency.FrequencyDistance)
 print(crack.decode())
