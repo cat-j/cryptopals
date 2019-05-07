@@ -1,11 +1,6 @@
 import binascii
 
 def xor_encrypt(plaintext, key):
-    if (isinstance(plaintext, str)):
-        plaintext = bytes(plaintext, "utf-8")
-    if (isinstance(key, str)):
-        key = bytes(key, "utf-8")
-
     key_length = len(key)
     i = 0
     ciphertext = bytearray(b'')
