@@ -110,10 +110,9 @@ def show_ascii_chars(my_string):
     for ch in my_string:
         print("ch: %s\tord:%d\tis_ascii: %d\n" % (ch, ord(ch), is_ascii(ch)))
 
-# string1 and string2 must be the same length
-def hamming_distance(string1, string2):
+# bytes1 and bytes2 must be the same length
+def hamming_distance(bytes1, bytes2):
     distance = 0
-    bytes1, bytes2 = bytes(string1, "utf-8"), bytes(string2, "utf-8")
     for i in range(len(bytes1)):
         xord = bytes1[i] ^ bytes2[i]
         distance += count_ones(xord)
