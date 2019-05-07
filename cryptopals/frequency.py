@@ -1,3 +1,5 @@
+import math
+
 ENGLISH_ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 ENGLISH_ALPHABET_LETTERS = 26
@@ -61,13 +63,34 @@ def analyse_frequencies(my_string):
     
     return frequencies
 
+class FrequencyDistance:
+    worst_score = math.inf
+
+    @staticmethod
+    def score(my_string):
+        frequencies = analyse_frequencies(my_string)
+        return dict_frequency_distance(frequencies)
+    
+    @staticmethod
+    def compare(score1, score2):
+        return score1 < score2
+
+class CharTypeCount:
+    worst_score = 0
+
+    def __init__(self, my_char_type_fn):
+        self.char_type_fn = my_char_type_fn
+
+    def score(self, my_string):
+        return sum([1 if self.char_type_fn(ch) else 0 for ch in my_string])
+    
+    @staticmethod
+    def compare(score1, score2):
+        return score1 > score2
+
 # @var my_dict: dictionary containing character frequencies in a string
 def dict_frequency_distance(my_dict):
     return sum([abs(my_dict[k] - ENGLISH_LETTER_FREQUENCIES[k]) for k in ENGLISH_ALPHABET])
-
-def frequency_distance(my_string):
-    frequencies = analyse_frequencies(my_string)
-    return dict_frequency_distance(frequencies)
 
 def is_alpha(ch):
     return ((ch >= 'a' and ch <= 'z') or (ch >= 'A' and ch <= 'Z'))
@@ -78,17 +101,6 @@ def is_alpha_space_or_null(ch):
 def is_ascii(ch):
     n = ord(ch)
     return(n >= 0 and n < 128)
-
-# TODO: refactor the next three functions
-
-def count_alpha_chars(my_string):
-    return sum([(1 if is_alpha_space_or_null(ch) else 0) for ch in my_string])
-
-def count_ascii_chars(my_string):
-    return sum([(1 if is_ascii(ch) else 0) for ch in my_string])
-
-def count_alnum_chars(my_string):
-    return sum([(1 if ch.isalnum() else 0) for ch in my_string])
 
 def show_alpha_chars(my_string):
     for ch in my_string:
