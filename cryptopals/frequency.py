@@ -101,6 +101,9 @@ def is_alpha(ch):
 def is_alpha_space_or_null(ch):
     return (is_alpha(ch) or ch == ' ' or ch == '\0')
 
+def is_alnum_or_space(ch):
+    return ch.isalnum() or ch == ' '
+
 def is_ascii(ch):
     n = ord(ch)
     return(n >= 0 and n < 128)
