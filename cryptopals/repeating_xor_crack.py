@@ -1,5 +1,6 @@
 import math
 import binascii
+import threading
 import singlebytexor
 import frequency
 import encrypt
@@ -40,6 +41,43 @@ def get_xor_bytes(blocks, score_fn):
     
     return bytearray(xor_bytes)
 
+def get_xor_bytes_and_encrypt(blocks, score_fn, ciphertext):
+    xor_bytes = get_xor_bytes(blocks, score_fn)
+    return encrypt.xor_encrypt(ciphertext, xor_bytes)
+
+def xor_bytes_worker(blocks, score_fn, results_list):
+    xor_bytes = get_xor_bytes(blocks, score_fn)
+    results_list.append(xor_bytes)
+    return
+
+def xor_encrypt_worker(ciphertext, key, results_list):
+    plaintext = encrypt.xor_encrypt(ciphertext, key)
+    results_list.append(plaintext)
+    return
+
+def get_xor_bytes_and_encrypt_worker(blocks, score_fn, ciphertext, results_list):
+    decrypted = get_xor_bytes_and_encrypt(blocks, score_fn, ciphertext)
+    results_list.append(decrypted)
+    return
+
+# Execute worker_fn on num_threads threads
+# worker_fn *MUST* be a function that appends the result of its calculations
+# to its last argument, thus the check for it being a list
+def calculate_multithreaded(num_threads, worker_fn, worker_args_list):
+    threads = []
+
+    for i in range(num_threads):
+        worker_args = worker_args_list[i]
+        assert(type(worker_args[-1]) == list)
+        t = threading.Thread(target=worker_fn, args=worker_args)
+        threads.append(t)
+        t.start()
+
+    for i in range(num_threads):
+        threads[i].join()
+    
+    return
+
 def get_blocks_for_best_distances(ciphertext, distances, best_n=None):
     sorted_d = sorted(distances.items(), key=lambda x: x[1]) # sort by smallest distance
     blocks = []
@@ -50,25 +88,46 @@ def get_blocks_for_best_distances(ciphertext, distances, best_n=None):
     
     return blocks
 
-def crack_n(ciphertext, score_fn, lower=1, upper=None, best_n=None):
+def crack_n(ciphertext, score_fn, lower=1, upper=None, best_n=None, key_and_decrypt=True):
     if upper == None: upper = len(ciphertext) // 2
     
     print("Calculating key length distances...")
     distances = get_key_length_distances(ciphertext, lower, upper)
 
     print("Calculating blocks...")
-    distance_blocks = get_blocks_for_best_distances(ciphertext, distances, best_n)
+    blocks_list = get_blocks_for_best_distances(ciphertext, distances, best_n)
+    num_threads = len(blocks_list)
     
-    print("Calculating XOR bytes...")
-    xor_bytes = [get_xor_bytes(blocks, score_fn) for blocks in distance_blocks]
+    decrypted_list = []
 
-    print("Decrypting...")
-    decrypted = [encrypt.xor_encrypt(ciphertext, key) for key in xor_bytes]
-    return decrypted
+    if key_and_decrypt:
+        # Get key and decrypt in a single thread
+        print("Calculating keys and decrypting...")
+        get_xor_bytes_and_encrypt_worker_args = \
+            [(blocks, score_fn, ciphertext, decrypted_list) for blocks in blocks_list]
+        calculate_multithreaded(num_threads, worker_fn=get_xor_bytes_and_encrypt_worker, \
+            worker_args_list=get_xor_bytes_and_encrypt_worker_args)
+    else:
+        # One set of threads for calculating keys, one for decrypting
+        print("Calculating keys...")
+        xor_bytes_list = []
+        xor_bytes_worker_args = [(blocks, score_fn, xor_bytes_list) for blocks in blocks_list]
+        calculate_multithreaded(num_threads, worker_fn=xor_bytes_worker, \
+            worker_args_list=xor_bytes_worker_args)
+
+        print("Decrypting...")
+        xor_encrypt_worker_args = [(ciphertext, xor_bytes, decrypted_list) for xor_bytes in xor_bytes_list]
+        calculate_multithreaded(num_threads, worker_fn=xor_encrypt_worker, \
+            worker_args_list=xor_encrypt_worker_args)
+        
+
+    return decrypted_list
 
 def crack_one(ciphertext, score_fn, lower=1, upper=None):
     return crack_n(ciphertext, score_fn, lower, upper, 1)[0]
 
+# Instead of assuming the first element is the best guess,
+# analyse the whole list to find the one with the best score
 def get_best_crack(cracks, score_fn):
     best_score, best_crack = score_fn.worst_score, None
 
