@@ -120,7 +120,6 @@ def crack_n(ciphertext, score_fn, lower=1, upper=None, best_n=None, key_and_decr
         calculate_multithreaded(num_threads, worker_fn=xor_encrypt_worker, \
             worker_args_list=xor_encrypt_worker_args)
         
-
     return decrypted_list
 
 def crack_one(ciphertext, score_fn, lower=1, upper=None):
@@ -150,22 +149,10 @@ def decode_file(filename):
     
     return decoded_bytes
 
-def crack_file(filename, score_fn, lower=1, upper=None, best_n=None):
+def crack_file(filename, score_fn, lower=1, upper=None, best_n=None, key_and_decrypt=True):
     decoded_bytes = decode_file(filename)
-    return crack_n(decoded_bytes, score_fn, lower, upper, best_n)
+    return crack_n(decoded_bytes, score_fn, lower, upper, best_n, key_and_decrypt)
 
-frequency_distance = frequency.FrequencyDistance
-alpha_chars = frequency.CharTypeCount(frequency.is_alpha)
-alpha_space_or_null_chars = frequency.CharTypeCount(frequency.is_alpha_space_or_null)
-alnum_chars = frequency.CharTypeCount(lambda x: x.isalnum())
-
-cracks = crack_file("data/6.txt", frequency.FrequencyDistance, best_n=40)
-crack = get_best_crack(cracks, frequency.FrequencyDistance)
-
-f = open("repeating_xor_crack_log.txt", "+w")
-for crack in cracks:
-    try:
-        f.write("%s\n" % crack.decode())
-    except:
-        continue
-f.close()
+cracks = crack_file("data/6.txt", frequency.FrequencyDistance, best_n=20, key_and_decrypt=True)
+crack = get_best_crack(cracks, frequency.CharTypeCount(frequency.is_alnum_or_space))
+print(crack.decode())
