@@ -4,6 +4,7 @@ import threading
 import singlebytexor
 import frequency
 import encrypt
+import fileutils
 
 # Calculate the Hamming distances for the first two blocks of each size
 # in the range [lower, upper].
@@ -147,17 +148,8 @@ def get_best_crack(cracks, score_fn):
     
     return best_crack
 
-def decode_file(filename):
-    lines = open(filename, 'r').read().splitlines()
-    decoded_bytes = bytearray(b'')
-
-    for line in lines:
-        decoded_bytes += binascii.a2b_base64(line)
-    
-    return decoded_bytes
-
 def crack_file(filename, score_fn, lower=1, upper=None, best_n=None, key_and_decrypt=True):
-    decoded_bytes = decode_file(filename)
+    decoded_bytes = fileutils.decode_file_base64(filename)
     return crack_n(decoded_bytes, score_fn, lower, upper, best_n, key_and_decrypt)
 
 cracks = crack_file("data/6.txt", frequency.FrequencyDistance, best_n=20, key_and_decrypt=True)

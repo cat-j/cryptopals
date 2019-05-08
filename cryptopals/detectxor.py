@@ -1,9 +1,9 @@
 import singlebytexor
 import frequency
+import fileutils
 
 def find_single_byte_xor(filename):
-    lines = open(filename, 'r').read().splitlines()
-    raw_data = [bytearray.fromhex(l) for l in lines]
+    raw_data = fileutils.decode_file_hex(filename)
     best_score, best_string = 0, ""
 
     for r in raw_data:
