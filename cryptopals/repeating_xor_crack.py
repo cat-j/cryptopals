@@ -5,6 +5,8 @@ import singlebytexor
 import frequency
 import encrypt
 
+# Calculate the Hamming distances for the first two blocks of each size
+# in the range [lower, upper].
 def get_key_length_distances(ciphertext, lower, upper):
     distances = {}
 
@@ -15,7 +17,7 @@ def get_key_length_distances(ciphertext, lower, upper):
     return distances
 
 # Build a list of subsequences composed of the first, second, ... byte
-# of each block_size-long block of ciphertext
+# of each block_size-long block of ciphertext.
 # e.g. get_blocks("ilikedogs", 3) = ["iko", "leg", "ids"]
 def get_blocks(ciphertext, block_size):
     l = len(ciphertext)
@@ -31,7 +33,7 @@ def get_blocks(ciphertext, block_size):
     
     return blocks
 
-# Find the byte that yields the best frequency for each block
+# Find the byte that yields the best frequency for each block.
 def get_xor_bytes(blocks, score_fn):
     l = len(blocks)
     xor_bytes = [None for i in range(l)]
@@ -41,6 +43,7 @@ def get_xor_bytes(blocks, score_fn):
     
     return bytearray(xor_bytes)
 
+# blocks = ciphertext blocks
 def get_xor_bytes_and_encrypt(blocks, score_fn, ciphertext):
     xor_bytes = get_xor_bytes(blocks, score_fn)
     return encrypt.xor_encrypt(ciphertext, xor_bytes)
@@ -60,9 +63,9 @@ def get_xor_bytes_and_encrypt_worker(blocks, score_fn, ciphertext, results_list)
     results_list.append(decrypted)
     return
 
-# Execute worker_fn on num_threads threads
+# Execute worker_fn on num_threads threads.
 # worker_fn *MUST* be a function that appends the result of its calculations
-# to its last argument, thus the check for it being a list
+# to its last argument, hence the check for it being a list
 def calculate_multithreaded(num_threads, worker_fn, worker_args_list):
     threads = []
 
@@ -88,6 +91,11 @@ def get_blocks_for_best_distances(ciphertext, distances, best_n=None):
     
     return blocks
 
+# Try to crack ciphertext with a given score_fn for cryptanalysis.
+# lower and upper: range for key size brute forcing.
+# If not specified, upper is the largest possible block size (length // 2).
+# best_n: number of top key size brute force results to try encrypting.
+# key_and_decrypt: whether to perform key crack and decryption on the same thread.
 def crack_n(ciphertext, score_fn, lower=1, upper=None, best_n=None, key_and_decrypt=True):
     if upper == None: upper = len(ciphertext) // 2
     
@@ -125,8 +133,7 @@ def crack_n(ciphertext, score_fn, lower=1, upper=None, best_n=None, key_and_decr
 def crack_one(ciphertext, score_fn, lower=1, upper=None):
     return crack_n(ciphertext, score_fn, lower, upper, 1)[0]
 
-# Instead of assuming the first element is the best guess,
-# analyse the whole list to find the one with the best score
+# Analyse the whole list to find the crack with the best score.
 def get_best_crack(cracks, score_fn):
     best_score, best_crack = score_fn.worst_score, None
 
