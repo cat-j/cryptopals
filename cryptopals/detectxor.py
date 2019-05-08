@@ -7,7 +7,8 @@ def find_single_byte_xor(filename):
     best_score, best_string = 0, ""
 
     for r in raw_data:
-        current_score, current_string = singlebytexor.alpha_chars_decrypt(r)
+        (current_score, current_string, _) = singlebytexor.decrypt(r, \
+            frequency.CharTypeCount(frequency.is_alpha_space_or_null))
         if current_score > best_score:
             best_score, best_string = current_score, current_string
 
