@@ -19,3 +19,14 @@ def get_blocks(ciphertext, block_size):
         blocks.append(ciphertext[lower:upper])
     
     return blocks
+
+def pkcs7(block, size):
+    l = len(block)
+    assert(size >= l)
+    padded = block
+    pad_l = size-l
+
+    for i in range(pad_l):
+        padded += b'\x04'
+    
+    return(padded)
