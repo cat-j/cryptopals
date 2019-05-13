@@ -66,7 +66,7 @@ def get_xor_bytes_and_encrypt_worker(blocks, score_fn, ciphertext, results_list)
 
 # Execute worker_fn on num_threads threads.
 # worker_fn *MUST* be a function that appends the result of its calculations
-# to its last argument, hence the check for it being a list
+# to its last argument, hence the check for each worker_args[-1] being a list
 def calculate_multithreaded(num_threads, worker_fn, worker_args_list):
     threads = []
 
