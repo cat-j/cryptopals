@@ -1,4 +1,5 @@
 import base64
+import math
 
 # @var my_string: ASCII representation of hex bytes without 0x prefix
 def str_to_base64(my_string):
