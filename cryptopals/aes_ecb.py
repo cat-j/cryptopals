@@ -15,6 +15,6 @@ def aes_ecb_decrypt(blocks, key):
 
 key = bytearray(b'YELLOW SUBMARINE')
 decoded_bytes = fileutils.decode_file_base64("data/7.txt")
-blocks = coreutils.get_blocks(decoded_bytes, key)
+blocks = coreutils.get_blocks(decoded_bytes, len(key))
 plaintext = aes_ecb_decrypt(blocks, key)
 print(plaintext.decode())

@@ -7,9 +7,8 @@ def str_to_base64(my_string):
 def fixed_xor(buf1, buf2):
     return hex(int(buf1, 16) ^ int(buf2, 16))
 
-def get_blocks(ciphertext, key):
+def get_blocks(ciphertext, block_size):
     l = len(ciphertext)
-    block_size = len(key)
     num_blocks = math.ceil(l // block_size)
     blocks = []
 
